@@ -10,7 +10,7 @@ public class Cell {
 	private static boolean gui = true;
 	private static int turns = 100;
 	private static int traders = 10;
-	private static int marbles = 10;
+	private static int marbles = 40;
 	private static int dim = 5;
 	private static String mapPath = "cell/map/rotate.txt";
 	private static String playerPath = "cell/players.list";
