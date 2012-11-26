@@ -21,14 +21,16 @@ public class Player implements cell.sim.Player
 		//sack[] contains number of ball of each color
 		//player[][] contains location of all players at that point of the game when u are moving
 		//ie if you are the last player of the game player[][] will contain the location of the players after they have moved for the turn
-		//traders[][] containd location of all lep when it is our turn to move
-//		for(int i =0 ;i<traders.length;i++)
-//		{
-//			for(int j=0;j<traders[i].length;j++)
-//				Print.printStatement(traders[i][j]+"\t");
-//			Print.printStatement("\n");
-//		}
-//		Print.printStatement("\n");
+		//traders[][] contains location of all lep when it is our turn to move
+		try
+		{
+			Floyd.getShortestPaths(board);
+		}
+		catch(Exception e)
+		{
+			System.out.println(e);
+		}
+		//		Print.printStatement("\n");
 //		Print.printStatement("\n");
 //		for(int i=0;i<location.length;i++)
 //			Print.printStatement(location[i]+"\t");
