@@ -7,33 +7,131 @@ import java.io.PrintWriter;
 
 public class Floyd 
 {
-    public static void getShortestPaths(int board[][]) throws IOException 
-    {
-		System.out.println("This program will generate a weighted graph and find the all pairs shortes distance in this graph.\n");
-		System.out.print("The graph, the all pairs shortest distance and the shortest path matrix will be written to a file.\n");
+	protected int shortest_path[][];
+	protected int mapping[][];
+	protected int board_as_graph[][];
+	protected int vertices = 0;
+	
+	void getGraph(int board[][])
+	{
 		try
 		{
-			System.out.print("\nEnter the destination file name-->");
+			System.out.println("1******");
+			mapping = new int[board.length][board.length];
+			for(int i=0;i<board.length;i++)
+			{
+				for(int j=0;j<board[i].length;j++)
+				{
+					if(board[i][j] != -1)
+					{
+						mapping[i][j]=vertices;
+						vertices++;
+					}
+					else
+						mapping[i][j]= -1;
+				}
+			}
+			System.out.println("1******");
+			board_as_graph = new int[vertices][vertices];
+			
+			for(int i=0;i<board.length;i++)
+			{
+				for(int j=0;j<board.length;j++)
+				{
+					int src = mapping[i][j];
+					if(src == -1)
+						continue;
+					int dest,x,y;
+					//W
+					x=i;
+					y=j-1;
+					if(y>=0)
+					{
+						dest = mapping[i][j-1];
+						if(dest != -1)
+							board_as_graph[src][dest] = 1 ;
+					}
+					//E
+					x=i;
+					y=j+1;
+					if(y<board.length)
+					{
+						dest=mapping[i][j+1];
+						if(dest != -1)
+							board_as_graph[src][dest] = 1 ;
+					}
+					//NW
+					x=i-1;
+					y=j-1;
+					if(x>=0 && y>=0)
+					{
+						dest=mapping[i-1][j-1];
+						if(dest != -1)
+							board_as_graph[src][dest] = 1 ;
+					}
+					//N
+					x=i-1;
+					y=j;
+					if(x>=0)
+					{
+						dest=mapping[i-1][j];
+						if(dest != -1)
+							board_as_graph[src][dest] = 1 ;
+					}
+					//S
+					x=i+1;
+					y=j;
+					if(x<board.length)
+					{
+						dest=mapping[i+1][j];
+						if(dest != -1)
+							board_as_graph[src][dest] = 1 ;
+					}
+					//SE
+					x=i+1;
+					y=j+1;
+					if(x< board.length && y<board.length)
+					{
+						dest=mapping[i+1][j+1];
+						if(dest != -1)
+							board_as_graph[src][dest] = 1 ;
+					}
+				}
+			}
+			System.out.println("1******");
+		}
+		catch(Exception e)
+		{
+			System.out.println("GET GRAPH "+e);
+		}
+	}
+	
+    public void getShortestPaths(int board[][])
+    {
+		try
+		{
+			getGraph(board);
+//			System.out.print("\nEnter the destination file name-->");
 			String fileName = "shortest.txt";
 //			System.out.print("\nEnter directory name of destination file-->");
 //			String dirName = Tools.GetString();
 			File outputfile = new File(fileName);
-			System.out.print("How many vertices do you wish to create -->");
-			int vertices = board.length;		
-			int[][] Graph = new int[vertices][vertices];
+//			System.out.print("How many vertices do you wish to create -->");
+//			int vertices = board_as_graph.length;		
+//			board_as_graph = new int[vertices][vertices];
 			int[][] ShortestDistance = new int[vertices][vertices];
 			//This matrix will contain the shortes path between i and j
-			int[][] ShortestPath = new int[vertices][vertices];
+			shortest_path = new int[vertices][vertices];
 			//If ShortestPath[i][j] = k it means that the shortes path between i and j is i --> k  --> j		
 			int n, m;
 			for ( n = 0; n < vertices; n++)
 				for ( m = 0; m < vertices; m++)
 				{
-					Graph[m][n] = board[m][n];
-					if(Graph[m][n] == -1 || m==n)
-						Graph[m][n] = 0;
+					board_as_graph[m][n] = board_as_graph[m][n];
+					if(board_as_graph[m][n] == -1 || m==n)
+						board_as_graph[m][n] = 0;
 					else 
-						Graph[m][n]=1;
+						board_as_graph[m][n]=1;
 						
 				}
 			//Floyd's algorithm starts here	
@@ -41,8 +139,8 @@ public class Floyd
 			for ( n = 0; n < vertices; n++)
 				for ( m = 0; m < vertices; m++)
 				{
-					ShortestDistance[m][n] = Graph[n][m];
-					ShortestPath[m][n] = -1;
+					ShortestDistance[m][n] = board_as_graph[n][m];
+					shortest_path[m][n] = -1;
 				}
 			for (int x = 0; x < vertices; x++)
 				for (int y = 0; y < vertices; y++)
@@ -50,7 +148,7 @@ public class Floyd
 						if (ShortestDistance[y][z] > ShortestDistance[y][x] + ShortestDistance[x][z])
 						{
 							ShortestDistance[y][z] = ShortestDistance[y][x] + ShortestDistance[x][z];
-							ShortestPath[y][z] = x;
+							shortest_path[y][z] = x;
 						}
 
 			PrintWriter output = new  PrintWriter(new FileWriter(outputfile));
@@ -60,11 +158,11 @@ public class Floyd
 				if (n < 10) output.print(" "+n+":  ");
 				else output.print(n+":  ");
 				for ( m = 0; m < vertices; m++)
-					if (Graph[n][m] < 10)
-						output.print(Graph[n][m] + "   ");
-					else if (Graph[n][m] < 100)
-						output.print(Graph[n][m] + "  ");	
-					else output.print(Graph[n][m] + " ");
+					if (board_as_graph[n][m] < 10)
+						output.print(board_as_graph[n][m] + "   ");
+					else if (board_as_graph[n][m] < 100)
+						output.print(board_as_graph[n][m] + "  ");	
+					else output.print(board_as_graph[n][m] + " ");
 				output.println();
 			}// for
 			output.print("\n\nThe Shortest Distance is: \n\n");
@@ -87,10 +185,10 @@ public class Floyd
 				if (n < 10) output.print(" "+n+":  ");
 				else output.print(n+":  ");
 				for ( m = 0; m < vertices; m++)
-					if (ShortestPath[n][m] < 10 && ShortestPath[n][m]> -1)
-						output.print("  " + ShortestPath[n][m]);
+					if (shortest_path[n][m] < 10 && shortest_path[n][m]> -1)
+						output.print("  " + shortest_path[n][m]);
 					else
-						output.print(" " + ShortestPath[n][m]);
+						output.print(" " + shortest_path[n][m]);
 				output.println();
 			}// for
 			output.close();

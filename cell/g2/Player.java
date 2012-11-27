@@ -8,7 +8,9 @@ public class Player implements cell.sim.Player
 	private int[] savedSack;
 	private static int versions = 0;
 	private int version = ++versions;
-
+	private Floyd shortest = new Floyd();
+	int turn_number = 1;
+	private int threshold[] = new int[6];;
 	public String name() 
 	{ 
 		return "g2" + (version != 1 ? " v" + version : ""); 
@@ -22,13 +24,16 @@ public class Player implements cell.sim.Player
 		//player[][] contains location of all players at that point of the game when u are moving
 		//ie if you are the last player of the game player[][] will contain the location of the players after they have moved for the turn
 		//traders[][] contains location of all lep when it is our turn to move
-		try
+		if(turn_number == 1)
 		{
-			Floyd.getShortestPaths(board);
-		}
-		catch(Exception e)
-		{
-			System.out.println(e);
+			try
+			{
+				shortest.getShortestPaths(board);
+			}
+			catch(Exception e)
+			{
+				System.out.println("STUPID SHORTEST : "+e);
+			}
 		}
 		//		Print.printStatement("\n");
 //		Print.printStatement("\n");
