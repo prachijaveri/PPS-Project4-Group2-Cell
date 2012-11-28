@@ -1,3 +1,5 @@
+
+
 package cell.g2;
 
 import java.util.LinkedList;
@@ -8,7 +10,7 @@ public class Trader
 	private int coordinates[][];
 	private int no_of_traders;
 	private int range =0; 
-	
+
 	Trader(int traders[][])
 	{
 		no_of_traders = traders.length;
@@ -25,7 +27,7 @@ public class Trader
 		if(range<r)
 			range = r;
 	}
-	
+
 	int getBestTrader(int location[],Floyd shortest)
 	{
 		int rank[] = new int[no_of_traders];
@@ -47,7 +49,7 @@ public class Trader
 		}
 		return min;
 	}
-	
+
 	int getClusterScore(int i, boolean visited[],Floyd shortest)
 	{
 		visited[i]=true;
@@ -67,7 +69,7 @@ public class Trader
 		}
 		return r[min];
 	}
-	
+
 	LinkedList<Integer> getNearByTraders(int i,boolean[] visited, Floyd shortest)
 	{
 		LinkedList<Integer> near = new LinkedList<Integer>();

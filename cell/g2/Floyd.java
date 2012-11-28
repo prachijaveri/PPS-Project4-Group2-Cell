@@ -31,7 +31,7 @@ public class Floyd
 			}
 			Print.printStatement("1******\n");
 			board_as_graph = new int[vertices][vertices];
-			
+
 			for(int i=0;i<board.length;i++)
 			{
 				for(int j=0;j<board.length;j++)
@@ -103,7 +103,7 @@ public class Floyd
 			Print.printStatement("GET GRAPH "+e+"\n");
 		}
 	}
-	
+
 	protected void getShortestPaths(int board[][]) 
 	{
 		getGraph(board);
@@ -167,7 +167,7 @@ public class Floyd
 		Print.printStatement("---------------------------------------------\n");
 
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	private void buildPath() 
 	{
@@ -188,7 +188,7 @@ public class Floyd
 			}
 		}
 	}
-	
+
 	private void setPath(int i, int j, int index_i, int index_j) 
 	{
 		if (graph[i][j] == Integer.MAX_VALUE) 
@@ -204,7 +204,7 @@ public class Floyd
 			setPath(id, j, index_i, index_j);
 		}
 	}
-	
+
 	protected Vector<Integer> getShortestPath(int i_src, int j_src, int i_dest ,int j_dest )
 	{
 		int src=mapping[i_src][j_src];
@@ -212,7 +212,7 @@ public class Floyd
 //		Print.printStatement("SHORTEST "+src+"   "+dest+"\n");
 		return shortest_path[src][dest];
 	}
-	
+
 	protected int getMapping(int i ,int j)
 	{
 		return mapping[i][j];
