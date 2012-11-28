@@ -2,6 +2,8 @@ package cell.g2;
 
 import java.util.Random;
 
+import cell.sim.Player.Direction;
+
 public class Player implements cell.sim.Player 
 {
 	private Random gen = new Random();
@@ -43,35 +45,41 @@ public class Player implements cell.sim.Player
 //		Print.printStatement("\n");
 //		Print.printStatement("\n");
 		savedSack = copyI(sack);
-		for (;;) 
-		{
-			
-//			Direction dir = getDirection();
-//			int[] new_location = move(location, dir);
-//			int color = color(new_location, board);
-//			if (color >= 0 && sack[color] != 0) 
-//			{
-//				savedSack[color]--;
-				return getDirection(x1,y1,x2,y2);
-//			}
+		for (;;) {
+			Direction dir = randomDirection();
+			int[] new_location = move(location, dir);
+			int color = color(new_location, board);
+			if (color >= 0 && sack[color] != 0) {
+				savedSack[color]--;
+				return dir;
+			}
 		}
 	}
 
-	private Direction getDirection(int x1,int y1,int x2,int y2)
+	private Direction randomDirection()//int x1,int y1,int x2,int y2)
 	{
-		if(x1 == x2 && y1+1 == y2)
-			return Direction.E;
-		if(x1 == x2 && y1-1 == y2)
-			return Direction.W;
-		if(x1+1 == x2 && y1+1 == y2)
-			return Direction.SE;
-		if(x1+1 == x2 && y1 == y2)
-			return Direction.S;
-		if(x1-1 == x2 && y1 == y2)
-			return Direction.N;
-		if(x1-1 == x2 && y1-1 == y2)
-			return Direction.NW;
-		return null;
+		switch(gen.nextInt(6)) {
+		case 0: return Direction.E;
+		case 1: return Direction.W;
+		case 2: return Direction.SE;
+		case 3: return Direction.S;
+		case 4: return Direction.N;
+		case 5: return Direction.NW;
+		default: return null;
+	}
+//		if(x1 == x2 && y1+1 == y2)
+//			return Direction.E;
+//		if(x1 == x2 && y1-1 == y2)
+//			return Direction.W;
+//		if(x1+1 == x2 && y1+1 == y2)
+//			return Direction.SE;
+//		if(x1+1 == x2 && y1 == y2)
+//			return Direction.S;
+//		if(x1-1 == x2 && y1 == y2)
+//			return Direction.N;
+//		if(x1-1 == x2 && y1-1 == y2)
+//			return Direction.NW;
+//		return null;
 	}
 
 	public void trade(double[] rate, int[] request, int[] give)
@@ -95,44 +103,44 @@ public class Player implements cell.sim.Player
 		}
 	}
 
-//	private static int[] move(int[] location, Player.Direction dir)
-//	{
-//		int di, dj;
-//		int i = location[0];
-//		int j = location[1];
-//		if (dir == Player.Direction.W) 
-//		{
-//			di = 0;
-//			dj = -1;
-//		} 
-//		else if (dir == Player.Direction.E) 
-//		{
-//			di = 0;
-//			dj = 1;
-//		} 
-//		else if (dir == Player.Direction.NW) 
-//		{
-//			di = -1;
-//			dj = -1;
-//		} 
-//		else if (dir == Player.Direction.N) 
-//		{
-//			di = -1;
-//			dj = 0;
-//		} 
-//		else if (dir == Player.Direction.S) 
-//		{
-//			di = 1;
-//			dj = 0;
-//		} else if (dir == Player.Direction.SE) 
-//		{
-//			di = 1;
-//			dj = 1;
-//		} 
-//		else return null;
-//		int[] new_location = {i + di, j + dj};
-//		return new_location;
-//	}
+	private static int[] move(int[] location, Player.Direction dir)
+	{
+		int di, dj;
+		int i = location[0];
+		int j = location[1];
+		if (dir == Player.Direction.W) 
+		{
+			di = 0;
+			dj = -1;
+		} 
+		else if (dir == Player.Direction.E) 
+		{
+			di = 0;
+			dj = 1;
+		} 
+		else if (dir == Player.Direction.NW) 
+		{
+			di = -1;
+			dj = -1;
+		} 
+		else if (dir == Player.Direction.N) 
+		{
+			di = -1;
+			dj = 0;
+		} 
+		else if (dir == Player.Direction.S) 
+		{
+			di = 1;
+			dj = 0;
+		} else if (dir == Player.Direction.SE) 
+		{
+			di = 1;
+			dj = 1;
+		} 
+		else return null;
+		int[] new_location = {i + di, j + dj};
+		return new_location;
+	}
 
 	private static int color(int[] location, int[][] board)
 	{
