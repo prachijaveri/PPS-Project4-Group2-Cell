@@ -3,6 +3,8 @@ package cell.g2;
 import java.util.Random;
 
 import cell.sim.Player.Direction;
+import java.util.ArrayList;
+import java.util.Collections;
 
 public class Player implements cell.sim.Player 
 {
@@ -81,28 +83,94 @@ public class Player implements cell.sim.Player
 //			return Direction.NW;
 //		return null;
 	}
-
+        private class Rate_Pair implements Comparable
+        {
+            int i, j;
+            double delta;
+            private Rate_Pair(int i, int j, double delta)
+            {
+                this.i = i;
+                this.j = j;
+                this.delta = delta;
+            }
+            public int compareTo(Object t) 
+            {
+                if(((Rate_Pair)t).delta == this.delta)
+                    return 0;
+                else if(this.delta < ((Rate_Pair)t).delta)
+                    return 1;
+                else
+                    return -1;
+            }
+        }
+        public void getMappingData(ArrayList<Rate_Pair> deltaListOverall, ArrayList<Rate_Pair> [] deltaListSpecific, double [] rate)
+        {
+            ArrayList<Rate_Pair>deltaList = new ArrayList();
+            
+            for(int i = 0; i < rate.length; i++)
+            {
+                ArrayList<Rate_Pair> temp = new ArrayList();
+                for(int j = 0; j < rate.length; j++)
+                {
+                    double deltaValue = 0;
+                    if(i == j)
+                        continue;
+                    
+                    deltaValue = Math.abs(rate[i] - rate[j]);
+                    Rate_Pair x = new Rate_Pair(i,j,deltaValue);
+                    deltaListOverall.add(x);
+                    temp.add(x);
+                }
+                deltaListSpecific[i] = temp;
+                Collections.sort(deltaListSpecific[i]);
+            }
+            Collections.sort(deltaListOverall);           
+        }
 	public void trade(double[] rate, int[] request, int[] give)
 	{
-		for (int r = 0 ; r != 6 ; ++r)
-			request[r] = give[r] = 0;
-		double rv = 0.0, gv = 0.0;
-		for (int i = 0 ; i != 10 ; ++i) 
-		{
-			int j = gen.nextInt(6);
-			if (give[j] == savedSack[j]) break;
-			give[j]++;
-			gv += rate[j];
-		}
-		for (;;) 
-		{
-			int j = gen.nextInt(6);
-			if (rv + rate[j] >= gv) break;
-			request[j]++;
-			rv += rate[j];
-		}
-	}
+            ArrayList<Rate_Pair> deltaListOverall = new ArrayList();
+            ArrayList<Rate_Pair> [] deltaListSpecific = new ArrayList[rate.length];
 
+            getMappingData(deltaListOverall,deltaListSpecific,rate);
+          
+            Rate_Pair temp = deltaListOverall.get(0);
+            
+            
+            /* does some dumb code for now */
+            int highest = 0;
+            int lowest = 0;
+            double giveValue  = 0;
+            double requestValue = 0;
+            
+            for(int i = 0; i < rate.length ; i++)
+            {
+                if(rate[highest] < rate[i])
+                    highest = i;
+            }
+            for(int i = 0; i < rate.length ; i++)
+            {
+                if(rate[lowest] > rate[i])
+                    lowest = i;
+            }
+            give[highest]  = 3;
+            request[lowest] = 3;
+            giveValue = rate[highest] * 3;
+            requestValue = rate[lowest] * 3;
+            for(;;)
+            {
+                if(requestValue < giveValue)
+                {
+                    request[lowest]++;
+                    requestValue += rate[lowest];
+                }
+                if(requestValue > giveValue)
+                {
+                    request[lowest]--;
+                    break;
+                }
+            }
+
+	}
 	private static int[] move(int[] location, Player.Direction dir)
 	{
 		int di, dj;
