@@ -14,6 +14,9 @@ public class Player implements cell.sim.Player {
 	public Direction move(int[][] board, int[] location, int[] sack,
 	                      int[][] players, int[][] traders)
 	{
+		System.out.println(traders.length);
+		System.out.println(traders[0].length);
+
 		savedSack = copyI(sack);
 		for (;;) {
 			Direction dir = randomDirection();
