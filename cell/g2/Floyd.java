@@ -212,6 +212,10 @@ public class Floyd
 		return shortest_path[src][dest];
 	}
 	
+	protected int getMapping(int i ,int j)
+	{
+		return mapping[i][j];
+	}
 	protected int[] getCoordinates(int m)
 	{
 		int coordinates[]= new int[2];
