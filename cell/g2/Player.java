@@ -3,10 +3,14 @@ package cell.g2;
 import java.util.Random;
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 import cell.sim.Player.Direction;
 import java.util.ArrayList;
 import java.util.Collections;
+=======
+import java.util.Vector;
+>>>>>>> origin/Prachi
 =======
 import java.util.Vector;
 >>>>>>> origin/Prachi
@@ -57,6 +61,7 @@ public class Player implements cell.sim.Player
 		savedSack = copyI(sack);
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
                 initialSack = copyI(sack);
 		for (;;) {
 			Direction dir = randomDirection();
@@ -67,6 +72,8 @@ public class Player implements cell.sim.Player
 				return dir;
 			}
 =======
+=======
+>>>>>>> origin/Prachi
 =======
 >>>>>>> origin/Prachi
 		shortest = new Floyd();
@@ -82,6 +89,7 @@ public class Player implements cell.sim.Player
 		turn_number++;
 		d = getDirection(location[0],location[1],next_location[0],next_location[1]);
 		return d;	
+<<<<<<< HEAD
 <<<<<<< HEAD
 	}
 	
@@ -118,6 +126,7 @@ public class Player implements cell.sim.Player
 		else //if(x1-1 == x2 && y1-1 == y2)
 			return Direction.NW;
 //		return null;
+=======
 =======
 	}
 	
@@ -164,6 +173,60 @@ public class Player implements cell.sim.Player
 			return -1;
 		return board[i][j];
 	}
+
+	private int[] copyI(int[] a)
+	{
+		int[] b = new int [a.length];
+		for (int i = 0 ; i != a.length ; ++i)
+			b[i] = a[i];
+		return b;
+>>>>>>> origin/Prachi
+	}
+	
+	int getBestPath(int src_location[],int dest_location1,int dest_location2)
+	{
+		//Need to check for availability of colors marbles
+		//Need to add another function to calculate another path in case the shortest path requires a color for which we do not contain the marble
+		int next_node = 0;
+		Vector<Integer> v = shortest.getShortestPath(src_location[0], src_location[1], dest_location1, dest_location2);
+		Print.printStatement("Vector"+v);
+		if(v.size() == 0)
+			next_node = shortest.getMapping(dest_location1, dest_location2);
+		else
+		{
+			next_node = (Integer)v.elementAt(0);
+		}
+		return next_node;
+	}
+	
+	private Direction getDirection(int x1,int y1,int x2,int y2)
+	{
+		Print.printStatement(x1+"   "+y1+"\n"+x2+"  "+y2);
+		if(x1 == x2 && y1+1 == y2)
+			return Direction.E;
+		else if(x1 == x2 && y1-1 == y2)
+			return Direction.W;
+		else if(x1+1 == x2 && y1+1 == y2)
+			return Direction.SE;
+		else if(x1+1 == x2 && y1 == y2)
+			return Direction.S;
+		else if(x1-1 == x2 && y1 == y2)
+			return Direction.N;
+		else //if(x1-1 == x2 && y1-1 == y2)
+			return Direction.NW;
+//		return null;
+	}
+
+	private static int color(int[] location, int[][] board)
+	{
+		int i = location[0];
+		int j = location[1];
+		int dim2_1 = board.length;
+		if (i < 0 || i >= dim2_1 || j < 0 || j >= dim2_1)
+			return -1;
+		return board[i][j];
+	}
+<<<<<<< HEAD
 
 	private int[] copyI(int[] a)
 	{
@@ -394,6 +457,8 @@ public class Player implements cell.sim.Player
 		}
 >>>>>>> origin/Prachi
 	}
+=======
+>>>>>>> origin/Prachi
 =======
 >>>>>>> origin/Prachi
 }
