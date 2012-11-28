@@ -209,6 +209,7 @@ public class Floyd
 	{
 		int src=mapping[i_src][j_src];
 		int dest = mapping[i_dest][j_dest];
+//		Print.printStatement("SHORTEST "+src+"   "+dest+"\n");
 		return shortest_path[src][dest];
 	}
 	
@@ -226,7 +227,7 @@ public class Floyd
 			{
 				coordinates[1]=j;
 				if(mapping[i][j] == m)
-					break;
+					return coordinates;
 			}
 		}
 		return coordinates;

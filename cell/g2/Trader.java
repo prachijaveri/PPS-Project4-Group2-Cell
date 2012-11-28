@@ -34,6 +34,8 @@ public class Trader
 			Vector<Integer> path = shortest.getShortestPath(location[0], location[1], coordinates[i][0], coordinates[i][1]);
 			if(path != null)
 				rank[i]=path.size()+1;
+			else
+				rank[i]=50;
 			boolean visited[] =new boolean[no_of_traders];
 			rank[i] = rank[i] - getClusterScore(i,visited,shortest);
 		}
@@ -52,7 +54,7 @@ public class Trader
 		LinkedList<Integer> near = getNearByTraders(i,visited,shortest);
 		if(near.size() == 0)
 			return 1;
-		int r[] = new int[near.size()];
+		int r[] = new int[no_of_traders];
 		for(int j=0;j<near.size();j++)
 		{
 			r[(int)near.get(j)] = getClusterScore(near.get(j),visited,shortest)+1;
