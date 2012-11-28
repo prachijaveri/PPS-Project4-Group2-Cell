@@ -12,7 +12,7 @@ public class Player implements cell.sim.Player
 	private int version = ++versions;
 	private Floyd shortest = new Floyd();
 	int turn_number = 1;
-	private int threshold[] = new int[6];;
+	private int threshold[] = new int[6];
 	public String name() 
 	{ 
 		return "g2" + (version != 1 ? " v" + version : ""); 
@@ -38,12 +38,6 @@ public class Player implements cell.sim.Player
 				System.out.println("SHORTEST : "+e);
 			}
 		}
-		//		Print.printStatement("\n");
-//		Print.printStatement("\n");
-//		for(int i=0;i<location.length;i++)
-//			Print.printStatement(location[i]+"\t");
-//		Print.printStatement("\n");
-//		Print.printStatement("\n");
 		savedSack = copyI(sack);
 		for (;;) {
 			Direction dir = randomDirection();
