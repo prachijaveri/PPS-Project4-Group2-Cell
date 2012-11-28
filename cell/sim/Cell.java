@@ -9,8 +9,8 @@ public class Cell {
 	// configuration info that varies less
 	private static boolean gui = true;
 	private static int turns = 100;
-	private static int traders = 10;
-	private static int marbles = 40;
+	private static int traders = 5;
+	private static int marbles = 10;
 	private static int dim = 3;
 	private static String mapPath = "cell/map/small.txt";
 	private static String playerPath = "cell/players.list";

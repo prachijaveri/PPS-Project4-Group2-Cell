@@ -10,6 +10,7 @@ public class Player implements cell.sim.Player
 {
 	private Random gen = new Random();
 	private int[] savedSack;
+        private int[] initialSack;
 	private static int versions = 0;
 	private int version = ++versions;
 	private Floyd shortest = new Floyd();
@@ -41,6 +42,7 @@ public class Player implements cell.sim.Player
 			}
 		}
 		savedSack = copyI(sack);
+                initialSack = copyI(sack);
 		for (;;) {
 			Direction dir = randomDirection();
 			int[] new_location = move(location, dir);
@@ -97,7 +99,27 @@ public class Player implements cell.sim.Player
                     return -1;
             }
         }
-        public void getMappingData(ArrayList<Rate_Pair> deltaListOverall, ArrayList<Rate_Pair> [] deltaListSpecific, double [] rate)
+        private class Rate implements Comparable
+        {
+            int i;
+            double rate;
+            private Rate(int i, double rate)
+            {
+                this.i = i;
+                this.rate = rate;
+            }
+            public int compareTo(Object t) 
+            {
+                if(((Rate)t).rate == this.rate)
+                    return 0;
+                else if(this.rate < ((Rate)t).rate)
+                    return 1;
+                else
+                    return -1;
+            }
+        }
+        public void getMappingData(ArrayList<Rate_Pair> deltaListOverall, ArrayList<Rate_Pair> [] deltaListSpecific, 
+                ArrayList<Rate> rateValueList, double [] rate)
         {
             ArrayList<Rate_Pair>deltaList = new ArrayList();
             
@@ -117,39 +139,58 @@ public class Player implements cell.sim.Player
                 }
                 deltaListSpecific[i] = temp;
                 Collections.sort(deltaListSpecific[i]);
+                rateValueList.add(new Rate(i,rate[i]));
             }
-            Collections.sort(deltaListOverall);           
+            Collections.sort(deltaListOverall); 
+            Collections.sort(rateValueList);
+            
         }
 	public void trade(double[] rate, int[] request, int[] give)
 	{
             ArrayList<Rate_Pair> deltaListOverall = new ArrayList();
+            ArrayList<Rate> rateValueList = new ArrayList();
             ArrayList<Rate_Pair> [] deltaListSpecific = new ArrayList[rate.length];
-
-            getMappingData(deltaListOverall,deltaListSpecific,rate);
-          
-            Rate_Pair temp = deltaListOverall.get(0);
+            getMappingData(deltaListOverall,deltaListSpecific,rateValueList,rate);
             
-            
-            /* does some dumb code for now */
-            int highest = 0;
-            int lowest = 0;
             double giveValue  = 0;
             double requestValue = 0;
+            int lowest = rateValueList.get(rateValueList.size()-1).i;
+            int highest = rateValueList.get(0).i;
             
-            for(int i = 0; i < rate.length ; i++)
+            /* default threshold must change */
+            double percentDec = .2;
+            int numColors = 6;
+            double percentStep = percentDec / numColors;
+            for(int i = 0; i < rate.length; i++)
             {
-                if(rate[highest] < rate[i])
-                    highest = i;
+                int value = rateValueList.get(i).i;
+                int dec = 0;
+                if(savedSack[value] < initialSack[i] * .10)
+                {
+                    threshold[value] = savedSack[value];
+                    continue;
+                }
+                if(Math.abs((savedSack[value] * percentDec) - Math.ceil(savedSack[value] * percentDec)) < .5)
+                    dec = (int)Math.ceil(savedSack[value] * percentDec);
+                else
+                    dec = (int) Math.floor(savedSack[value] * percentDec);
+                
+                threshold[value] = savedSack[value] - dec;
+                percentDec-= percentStep;
             }
-            for(int i = 0; i < rate.length ; i++)
+
+            for(int i = 0; i < rate.length; i++)
             {
-                if(rate[lowest] > rate[i])
-                    lowest = i;
+                int temp = 0;
+                if(i == lowest)
+                    continue;
+                if(savedSack[i] > threshold[i])
+                {
+                    temp = savedSack[i] - threshold[i];
+                    give[i]+= temp;
+                    giveValue+= rate[i] * give[i];
+                }
             }
-            give[highest]  = 3;
-            request[lowest] = 3;
-            giveValue = rate[highest] * 3;
-            requestValue = rate[lowest] * 3;
             for(;;)
             {
                 if(requestValue < giveValue)
@@ -163,7 +204,6 @@ public class Player implements cell.sim.Player
                     break;
                 }
             }
-
 	}
 	private static int[] move(int[] location, Player.Direction dir)
 	{
