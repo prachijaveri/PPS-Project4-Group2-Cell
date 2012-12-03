@@ -63,15 +63,13 @@ public class Player implements cell.sim.Player
 		int next_node = getBestPath(location, traders[op_trader][0], traders[op_trader][1]);
 		Print.printStatement("next : "+next_node+"\n");
 		next_location = shortest.getCoordinates(next_node);
-		int next_lep = 0;
+		/*int next_lep = 0;
 		for (int i=0; i<traders.length; ++i) {
 			if (traders[i][0] == next_location[0] && traders[i][1] == next_location[1])
 				next_lep = 1;
-		}
-		if (sack[color(next_location, board)] == 0 && next_lep == 0) {
-			System.out.print("here");
+		}*/
+		if (sack[color(next_location, board)] == 0) {
 			for (;;) {
-				System.out.print("der");
 				Direction dir = randomDirection();
 				int[] new_location = move(location, dir);
 				int color = color(new_location, board);
