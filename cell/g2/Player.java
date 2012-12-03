@@ -54,6 +54,7 @@ public class Player implements cell.sim.Player
 		shortest.getShortestPaths(board);
 		shortest.getPossiblePaths(board, sack);
 		threshold = shortest.getThreshold();
+		System.out.println(threshold);
 		board_size = (board.length+1)/2;
 		curr_loc = location;
 		t = new Trader(traders);

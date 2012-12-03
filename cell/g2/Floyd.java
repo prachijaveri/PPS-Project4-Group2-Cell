@@ -243,6 +243,8 @@ public class Floyd
 	protected int[] getThreshold()
 	{
 		int[] threshold = new int[6];
+		System.out.println(shortest_path.length);
+		System.out.println(vertices);
 		for (int i=0; i<vertices; ++i)
 		{
 			for (int j=0; j<vertices; ++j) 
@@ -267,7 +269,7 @@ public class Floyd
 	
 	protected void getPossiblePaths(int board[][], int sack[]) 
 	{
-		getGraph(board);
+		//getGraph(board);
 		graph1 = new int[vertices][vertices];
 		Print.printStatement("+++++++++\n");
 		for(int i=0;i<vertices;i++)
