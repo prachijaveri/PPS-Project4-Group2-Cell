@@ -11,7 +11,9 @@ public class Player implements cell.sim.Player
 {
 	private Random gen = new Random();
 	private int[] savedSack;
-    private int[] initialSack;
+        private int[] initialSack;
+        private int valueToWin; 
+        private boolean checked = false;
 	private static int versions = 0;
 	private int version = ++versions;
 	private Floyd shortest;
@@ -52,6 +54,11 @@ public class Player implements cell.sim.Player
 		Direction d;
 		savedSack = copyI(sack);
 		initialSack = copyI(sack);
+                if(!checked)
+                {
+                    valueToWin =  initialSack[0] * 6 * 4;
+                    checked = true;
+                }
 		shortest = new Floyd();
 		shortest.getShortestPaths(board);
 		shortest.getPossiblePaths(board, sack);
@@ -217,42 +224,159 @@ public class Player implements cell.sim.Player
             int lowest = rateValueList.get(rateValueList.size()-1).i;
             int highest = rateValueList.get(0).i;
             
-            /* default threshold must change */
-            double percentDec = .2;
-            int numColors = 6;
-            double percentStep = percentDec / numColors;
-            for(int i = 0; i < rate.length; i++)
+       
+            
+            /* Check if we can win */
+            int ourCount = 0;
+            int [] originalThresh = copyI(threshold);
+            for(int i =0; i < savedSack.length; i++)
             {
-                int value = rateValueList.get(i).i;
-                int dec = 0;
-                if(savedSack[value] < initialSack[i] * .10)
-                {
-                    threshold[value] = savedSack[value];
-                    continue;
-                }
-                if(Math.abs((savedSack[value] * percentDec) - Math.ceil(savedSack[value] * percentDec)) < .5)
-                    dec = (int)Math.ceil(savedSack[value] * percentDec);
-                else
-                    dec = (int) Math.floor(savedSack[value] * percentDec);
-                
-                threshold[value] = savedSack[value] - dec;
-                percentDec-= percentStep;
+                ourCount += savedSack[i];
             }
-
+            if(ourCount >= valueToWin)
+            {
+                System.out.println("VALUE TO W :" + valueToWin + "OC: " + ourCount);
+                System.out.println("CAN WIN!!!!!!!!!!!!!!");
+                for(int i = 0; i < rate.length; i++)
+                {
+                    threshold[i] = (valueToWin/6);
+                }
+            }
+            /* get set of values above threshold */
+            ArrayList<Rate> aboveThresh = new ArrayList();
             for(int i = 0; i < rate.length; i++)
             {
-                int temp = 0;
-                if(i == lowest)
-                    continue;
                 if(savedSack[i] > threshold[i])
+                    aboveThresh.add(new Rate(i,rate[i]));
+            }
+            Collections.sort(aboveThresh);
+
+            /* get set of values below threshold */
+            ArrayList<Rate> belowThresh = new ArrayList();
+            for(int i = 0; i < rate.length; i++)
+            {
+                if(savedSack[i] < threshold[i])
+                    belowThresh.add(new Rate(i,rate[i]));
+            }
+            Collections.sort(belowThresh);
+            
+            
+            /* Attempt to make threshold for all values */
+            int i = 0;
+            int j = belowThresh.size()-1;
+            while(!belowThresh.isEmpty() && !aboveThresh.isEmpty())
+            {
+                System.out.println("1");
+                if(j < 0)
+                    j = belowThresh.size()-1;
+
+                int colorAbove =  aboveThresh.get(0).i;
+                int colorBelow = belowThresh.get(j).i;
+                if(savedSack[colorBelow] < threshold[colorBelow])
                 {
-                    temp = savedSack[i] - threshold[i];
-                    give[i]+= temp;
-                    giveValue+= rate[i] * give[i];
+                    System.out.println("2");
+                    if(savedSack[colorAbove] > threshold[colorAbove])
+                    {
+                        give[colorAbove]++;
+                        request[colorBelow]++;
+                        giveValue += rate[colorAbove];
+                        requestValue += rate[colorBelow];
+                        savedSack[colorAbove]--;
+                    }
+                    else
+                    {
+                        aboveThresh.remove(0);
+                        if(aboveThresh.isEmpty())
+                            break;
+                        colorAbove = aboveThresh.get(0).i;
+                    }
+                    j--;
+                }
+                else
+                {
+                    belowThresh.remove(colorBelow);
+                    j = belowThresh.size()-1;
                 }
             }
+            
+            /* If everyone is at or above threshold, give excess away for lowest 
+             * rate marble*/
+            while(!aboveThresh.isEmpty())
+            {
+                System.out.println("3");
+                if(aboveThresh.isEmpty())
+                    break;
+                int colorAbove = aboveThresh.get(0).i;
+                if(colorAbove == lowest)
+                {
+                    aboveThresh.remove(0);
+                    continue;
+                }
+                while(savedSack[colorAbove] > threshold[colorAbove])
+                {
+                    System.out.println("4");
+                    give[colorAbove]++;
+                    if(requestValue < giveValue)
+                    {
+                        request[lowest]++;
+                        requestValue += rate[lowest];
+                    }
+                    giveValue += rate[colorAbove];
+                    savedSack[colorAbove]--; 
+                }
+                aboveThresh.remove(0);
+            }
+            
+            /* remove imbalance by removing one from each marble class until 
+             * giveValue >= requestValue
+             */
+            
+            i = 0;
+            int emptySacks = 0;
+            while(giveValue < requestValue)
+            {
+                if(i > rate.length-1)
+                    i=0;
+                if(emptySacks > 5)
+                {
+                    if(request[i] > 0)
+                    {
+                        request[i]--;
+                        requestValue -= rate[i];
+                        savedSack[i]++;
+                        emptySacks = 0;
+                        i++;
+                        continue;
+                    }
+                }
+
+                System.err.println("5 i:" + i + " SACK:" + savedSack[i]);
+                System.err.println("REQUST VALUE:" + requestValue + "GIVE VALUE: " + giveValue + "!!!!!!!!!!");
+                if(savedSack[i] > 0)
+                {
+                    give[i]++;
+                    giveValue += rate[i];
+                    savedSack[i]--;
+                }
+                else
+                    emptySacks++;
+                i++;
+            }
+            for(i = 0; i < rate.length; i++)
+            {
+                if(give[i] > savedSack[i])
+                {
+                    give[i]--;
+                    giveValue -= rate[i];
+                }
+            }
+            /* auto fill any more marbles we can get */
             for(;;)
             {
+                if(requestValue == giveValue)
+                    break;
+                System.out.println("6");
+                System.out.println("REquestValue:" + requestValue + "Give Value:" + giveValue);
                 if(requestValue < giveValue)
                 {
                     request[lowest]++;
@@ -260,11 +384,31 @@ public class Player implements cell.sim.Player
                 }
                 if(requestValue > giveValue)
                 {
-                    request[lowest]--;
+                    while(requestValue > giveValue)
+                    {
+                        System.out.println("7");
+                        if(request[lowest] > 1)
+                        {
+                            request[lowest]--;
+                            requestValue -= rate[lowest];
+                        }
+                        else
+                        {
+                            for(i = 0; i < rate.length; i++)
+                            {
+                                if(request[i] >0)
+                                {
+                                    request[i]--;
+                                    requestValue -= rate[i];
+                                }
+                            }
+                        }
+                    }
                     break;
                 }
             }
-
+            System.out.println("REQUST VALUE:" + requestValue + "GIVE VALUE: " + giveValue + "!!!!!!!!!!");
+            threshold = copyI(originalThresh);
 	}
 	private Direction randomDirection()
 	{
