@@ -343,7 +343,6 @@ public class Player implements cell.sim.Player
                     {
                         request[i]--;
                         requestValue -= rate[i];
-                        savedSack[i]++;
                         emptySacks = 0;
                         i++;
                         continue;
@@ -368,6 +367,7 @@ public class Player implements cell.sim.Player
                 {
                     give[i]--;
                     giveValue -= rate[i];
+                    savedSack[i]++;
                 }
             }
             /* auto fill any more marbles we can get */
@@ -396,7 +396,7 @@ public class Player implements cell.sim.Player
                         {
                             for(i = 0; i < rate.length; i++)
                             {
-                                if(request[i] >0)
+                                if(request[i] > 0)
                                 {
                                     request[i]--;
                                     requestValue -= rate[i];
