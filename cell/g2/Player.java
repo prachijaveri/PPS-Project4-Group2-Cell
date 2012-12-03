@@ -409,7 +409,7 @@ public class Player implements cell.sim.Player
                         break;
                 }
             }
-            System.out.println("REQUST VALUE:" + requestValue + "GIVE VALUE: " + giveValue + "!!!!!!!!!!");
+            //System.out.println("REQUST VALUE:" + requestValue + "GIVE VALUE: " + giveValue + "!!!!!!!!!!");
             threshold = copyI(originalThresh);
 	}
 	private Direction randomDirection()
