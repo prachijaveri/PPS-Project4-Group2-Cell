@@ -5,6 +5,8 @@ import java.util.Collections;
 import java.util.Random;
 import java.util.Vector;
 
+import cell.sim.Player.Direction;
+
 public class Player implements cell.sim.Player 
 {
 	private Random gen = new Random();
@@ -54,7 +56,6 @@ public class Player implements cell.sim.Player
 		shortest.getShortestPaths(board);
 		shortest.getPossiblePaths(board, sack);
 		threshold = shortest.getThreshold();
-		System.out.println(threshold);
 		board_size = (board.length+1)/2;
 		curr_loc = location;
 		t = new Trader(traders);
@@ -62,16 +63,30 @@ public class Player implements cell.sim.Player
 		int next_node = getBestPath(location, traders[op_trader][0], traders[op_trader][1]);
 		Print.printStatement("next : "+next_node+"\n");
 		next_location = shortest.getCoordinates(next_node);
+		int next_lep = 0;
+		for (int i=0; i<traders.length; ++i) {
+			if (traders[i][0] == next_location[0] && traders[i][1] == next_location[1])
+				next_lep = 1;
+		}
+		if (sack[color(next_location, board)] == 0 && next_lep == 0) {
+			System.out.print("here");
+			for (;;) {
+				System.out.print("der");
+				Direction dir = randomDirection();
+				int[] new_location = move(location, dir);
+				int color = color(new_location, board);
+				if (color >= 0 && sack[color] != 0) {
+					savedSack[color]--;
+					return dir;
+				}
+			}
+		}
 		Print.printStatement("SRC "+location[0]+"  "+location[1]+"\n");
 		Print.printStatement("DEST "+next_location[0]+"  "+next_location[1]+"\n");
 		turn_number++;
 		d = getDirection(location[0],location[1],next_location[0],next_location[1]);
 		return d;	
 	}
-	
-	/*int getThreshold() {
-		int next_trader = t.getNextTrader(curr_loc, shortest);
-	}*/
 
 	int getBestPath(int src_location[],int dest_location1,int dest_location2)
 	{
@@ -251,5 +266,45 @@ public class Player implements cell.sim.Player
                     break;
                 }
             }
+
+	}
+	private Direction randomDirection()
+	{
+		switch(gen.nextInt(6)) {
+			case 0: return Direction.E;
+			case 1: return Direction.W;
+			case 2: return Direction.SE;
+			case 3: return Direction.S;
+			case 4: return Direction.N;
+			case 5: return Direction.NW;
+			default: return null;
+		}
+	}
+	private static int[] move(int[] location, Player.Direction dir)
+	{
+		int di, dj;
+		int i = location[0];
+		int j = location[1];
+		if (dir == Player.Direction.W) {
+			di = 0;
+			dj = -1;
+		} else if (dir == Player.Direction.E) {
+			di = 0;
+			dj = 1;
+		} else if (dir == Player.Direction.NW) {
+			di = -1;
+			dj = -1;
+		} else if (dir == Player.Direction.N) {
+			di = -1;
+			dj = 0;
+		} else if (dir == Player.Direction.S) {
+			di = 1;
+			dj = 0;
+		} else if (dir == Player.Direction.SE) {
+			di = 1;
+			dj = 1;
+		} else return null;
+		int[] new_location = {i + di, j + dj};
+		return new_location;
 	}
 }

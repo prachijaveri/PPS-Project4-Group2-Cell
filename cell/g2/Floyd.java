@@ -243,8 +243,6 @@ public class Floyd
 	protected int[] getThreshold()
 	{
 		int[] threshold = new int[6];
-		System.out.println(shortest_path.length);
-		System.out.println(vertices);
 		for (int i=0; i<vertices; ++i)
 		{
 			for (int j=0; j<vertices; ++j) 
@@ -369,7 +367,7 @@ public class Floyd
 			int id = m;
 			setPath1(i, id, index_i, index_j, balls_left);
 			possible_path[index_i][index_j].add(m);
-			balls_left[color]--;
+			//balls_left[color]--;
 			/*if (color != -1 && balls_left[color] != 0) {
 				possible_path[index_i][index_j].add(m);
 				balls_left[color]--;
