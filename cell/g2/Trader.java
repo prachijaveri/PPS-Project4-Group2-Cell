@@ -33,7 +33,7 @@ public class Trader
 		int rank[] = new int[no_of_traders];
 		for(int i=0;i<no_of_traders;i++)
 		{
-			Vector<Integer> path = shortest.getShortestPath(location[0], location[1], coordinates[i][0], coordinates[i][1]);
+			Vector<Integer> path = shortest.getShortestPossiblePath(location[0], location[1], coordinates[i][0], coordinates[i][1]);
 			if(path != null)
 				rank[i]=path.size()+1;
 			else
@@ -77,7 +77,7 @@ public class Trader
 		{
 			if(!visited[x])
 			{
-				int size = shortest.getShortestPath(coordinates[i][0], coordinates[i][1], coordinates[x][0], coordinates[x][1]).size()+1;
+				int size = shortest.getShortestPossiblePath(coordinates[i][0], coordinates[i][1], coordinates[x][0], coordinates[x][1]).size()+1;
 				if(size<= range)
 					near.add(x);
 			}

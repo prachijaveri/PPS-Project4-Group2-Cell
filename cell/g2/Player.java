@@ -13,11 +13,13 @@ public class Player implements cell.sim.Player
 	private static int versions = 0;
 	private int version = ++versions;
 	private Floyd shortest;
+	private Floyd possible_moves;
 	private Trader t;
 	int turn_number = 1;
 	static int board_size=0;
 	private int threshold[] = new int[6];
 //	private int threshold[] = new int[6];
+	private int curr_loc[] = new int[2];
 	public String name() 
 	{ 
 		return "g2" + (version != 1 ? " v" + version : ""); 
@@ -50,7 +52,10 @@ public class Player implements cell.sim.Player
 		initialSack = copyI(sack);
 		shortest = new Floyd();
 		shortest.getShortestPaths(board);
+		shortest.getPossiblePaths(board, sack);
+		threshold = shortest.getThreshold();
 		board_size = (board.length+1)/2;
+		curr_loc = location;
 		t = new Trader(traders);
 		int op_trader = t.getBestTrader(location , shortest);
 		int next_node = getBestPath(location, traders[op_trader][0], traders[op_trader][1]);
@@ -62,13 +67,17 @@ public class Player implements cell.sim.Player
 		d = getDirection(location[0],location[1],next_location[0],next_location[1]);
 		return d;	
 	}
+	
+	/*int getThreshold() {
+		int next_trader = t.getNextTrader(curr_loc, shortest);
+	}*/
 
 	int getBestPath(int src_location[],int dest_location1,int dest_location2)
 	{
 		//Need to check for availability of colors marbles
 		//Need to add another function to calculate another path in case the shortest path requires a color for which we do not contain the marble
 		int next_node = 0;
-		Vector<Integer> v = shortest.getShortestPath(src_location[0], src_location[1], dest_location1, dest_location2);
+		Vector<Integer> v = shortest.getShortestPossiblePath(src_location[0], src_location[1], dest_location1, dest_location2);
 		Print.printStatement("Vector"+v);
 		if(v.size() == 0)
 			next_node = shortest.getMapping(dest_location1, dest_location2);
