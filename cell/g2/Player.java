@@ -235,8 +235,8 @@ public class Player implements cell.sim.Player
             }
             if(ourCount >= valueToWin)
             {
-                System.out.println("VALUE TO W :" + valueToWin + "OC: " + ourCount);
-                System.out.println("CAN WIN!!!!!!!!!!!!!!");
+                //System.out.println("VALUE TO W :" + valueToWin + "OC: " + ourCount);
+                //System.out.println("CAN WIN!!!!!!!!!!!!!!");
                 for(int i = 0; i < rate.length; i++)
                 {
                     threshold[i] = (valueToWin/6);
@@ -266,7 +266,7 @@ public class Player implements cell.sim.Player
             int j = belowThresh.size()-1;
             while(!belowThresh.isEmpty() && !aboveThresh.isEmpty())
             {
-                System.out.println("1");
+                //System.out.println("1");
                 if(j < 0)
                     j = belowThresh.size()-1;
 
@@ -274,7 +274,7 @@ public class Player implements cell.sim.Player
                 int colorBelow = belowThresh.get(j).i;
                 if(savedSack[colorBelow] < threshold[colorBelow])
                 {
-                    System.out.println("2");
+                    //System.out.println("2");
                     if(savedSack[colorAbove] > threshold[colorAbove])
                     {
                         give[colorAbove]++;
@@ -303,7 +303,7 @@ public class Player implements cell.sim.Player
              * rate marble*/
             while(!aboveThresh.isEmpty())
             {
-                System.out.println("3");
+                //System.out.println("3");
                 if(aboveThresh.isEmpty())
                     break;
                 int colorAbove = aboveThresh.get(0).i;
@@ -314,7 +314,7 @@ public class Player implements cell.sim.Player
                 }
                 while(savedSack[colorAbove] > threshold[colorAbove])
                 {
-                    System.out.println("4");
+                    //System.out.println("4");
                     give[colorAbove]++;
                     if(requestValue < giveValue)
                     {
@@ -349,8 +349,8 @@ public class Player implements cell.sim.Player
                     }
                 }
 
-                System.err.println("5 i:" + i + " SACK:" + savedSack[i]);
-                System.err.println("REQUST VALUE:" + requestValue + "GIVE VALUE: " + giveValue + "!!!!!!!!!!");
+//                System.err.println("5 i:" + i + " SACK:" + savedSack[i]);
+//                System.err.println("REQUST VALUE:" + requestValue + "GIVE VALUE: " + giveValue + "!!!!!!!!!!");
                 if(savedSack[i] > 0)
                 {
                     give[i]++;
@@ -375,8 +375,8 @@ public class Player implements cell.sim.Player
             {
                 if(requestValue == giveValue)
                     break;
-                System.out.println("6");
-                System.out.println("REquestValue:" + requestValue + "Give Value:" + giveValue);
+                //System.out.println("6");
+                //System.out.println("REquestValue:" + requestValue + "Give Value:" + giveValue);
                 if(requestValue < giveValue)
                 {
                     request[lowest]++;
@@ -386,7 +386,7 @@ public class Player implements cell.sim.Player
                 {
                     while(requestValue > giveValue)
                     {
-                        System.out.println("7");
+                        //System.out.println("7");
                         if(request[lowest] > 1)
                         {
                             request[lowest]--;
@@ -400,11 +400,13 @@ public class Player implements cell.sim.Player
                                 {
                                     request[i]--;
                                     requestValue -= rate[i];
+                                    break;
                                 }
                             }
                         }
                     }
-                    break;
+                    if(requestValue < giveValue)
+                        break;
                 }
             }
             System.out.println("REQUST VALUE:" + requestValue + "GIVE VALUE: " + giveValue + "!!!!!!!!!!");
