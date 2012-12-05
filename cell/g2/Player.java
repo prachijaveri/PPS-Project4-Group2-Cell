@@ -23,6 +23,8 @@ public class Player implements cell.sim.Player
 	static int board_size=0;
 	private int threshold[] = new int[6];
 //	private int threshold[] = new int[6];
+	private int base_thresh[] = new int[6];
+	private int walk_thresh[] = new int[6];
 	private int curr_loc[] = new int[2];
 	public String name() 
 	{ 
@@ -61,7 +63,7 @@ public class Player implements cell.sim.Player
         {
         	initialSack = copyI(sack);
         	valueToWin =  initialSack[0] * 6 * 4;
-        	threshold = shortest.getThreshold();
+        	base_thresh = shortest.getThreshold();
         	checked = true;
         }
 		board_size = (board.length+1)/2;
@@ -83,6 +85,7 @@ public class Player implements cell.sim.Player
 				int color = color(new_location, board);
 				if (color >= 0 && sack[color] != 0) {
 					savedSack[color]--;
+					walk_thresh[color]++;
 					return dir;
 				}
 			}
@@ -92,10 +95,11 @@ public class Player implements cell.sim.Player
 		turn_number++;
 		savedSack[color(next_location, board)]--;
 		d = getDirection(location[0],location[1],next_location[0],next_location[1]);
+		walk_thresh[color(next_location, board)]++;
 		return d;	
 	}
 
-	int getBestPath(int src_location[],int dest_location1,int dest_location2)
+	private int getBestPath(int src_location[],int dest_location1,int dest_location2)
 	{
 		//Need to check for availability of colors marbles
 		//Need to add another function to calculate another path in case the shortest path requires a color for which we do not contain the marble
@@ -230,17 +234,14 @@ public class Player implements cell.sim.Player
     
 	public void trade(double[] rate, int[] request, int[] give)
 	{
-            ArrayList<Rate_Pair> deltaListOverall = new ArrayList();
-            ArrayList<Rate> rateValueList = new ArrayList();
-            ArrayList<Rate_Pair> [] deltaListSpecific = new ArrayList[rate.length];
-            getMappingData(deltaListOverall,deltaListSpecific,rateValueList,rate);
-            
-            double giveValue  = 0;
-            double requestValue = 0;
-            int lowest = rateValueList.get(rateValueList.size()-1).i;
-            int highest = rateValueList.get(0).i;
-            
-            
+			for(int i=0; i < threshold.length; i++)
+			{
+				if (base_thresh[i] > walk_thresh[i])
+					threshold[i] = base_thresh[i];
+				else
+					threshold[i] = walk_thresh[i];
+				walk_thresh[i] = 0;
+			}
             double monies = 0.0;
             int best_deal = 0;
             if(checkPosWin(rate) == 1)
