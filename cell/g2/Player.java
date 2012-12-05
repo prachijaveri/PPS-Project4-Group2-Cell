@@ -10,10 +10,17 @@ import cell.sim.Player.Direction;
 public class Player implements cell.sim.Player 
 {
 	private Random gen = new Random();
+        private ArrayList<Integer> possiblePlayerIndex = new ArrayList();
 	private int[] savedSack;
 	private int[] initialSack;
+        private int[] lockStep;
 	private int valueToWin; 
+        private int isolateCount = 0;
 	private boolean checked = false;
+        private boolean initialize2 = false;
+        private boolean locatedPlayerIndex = false;
+        private int playerIndex;
+        private final int MAX_LOCKSTEP_COUNT = 4;
 	private static int versions = 0;
 	private int version = ++versions;
 	private Floyd shortest;
@@ -25,12 +32,98 @@ public class Player implements cell.sim.Player
 //	private int threshold[] = new int[6];
 	private int curr_loc[] = new int[2];
 	public String name() 
-	{ 
+	{
 		return "g2" + (version != 1 ? " v" + version : ""); 
 	}
 
 	public Direction move(int[][] board, int[] location, int[] sack, int[][] players, int[][] traders)
 	{
+                if(!initialize2)
+                {
+                    lockStep = new int[players.length];
+                    for(int i = 0; i < lockStep.length; i++)
+                        lockStep[i] = 0;
+                    initialize2 = true;
+                }
+                if(!locatedPlayerIndex)
+                {
+                    locatedPlayerIndex = true;
+                    
+                    for(int i = 0; i < players.length; i++)
+                    {
+                        if(players[i][0] == location[0] && players[i][1] == location[1])
+                            possiblePlayerIndex.add(i);
+                    }
+                    if(possiblePlayerIndex.size() < 2)
+                    {
+                        /* found unique position */
+                        playerIndex = possiblePlayerIndex.get(0);
+                        locatedPlayerIndex = true;
+                    }
+                    else
+                    {
+                        /* not unique */
+                        isolateCount++;
+                    }
+                    
+                    if(isolateCount > 4)
+                    {
+                        /* pick random location */
+                        for (;;) {
+                            Direction dir = randomDirection();
+                            int[] new_location = move(location, dir);
+                            int color = color(new_location, board);
+                            if (color >= 0 && sack[color] != 0) 
+                            {
+                                    savedSack[color]--;
+                                    isolateCount = 0;
+                                    possiblePlayerIndex.clear();
+                                    return dir;
+                            }
+                        }
+                        
+                    }
+                }
+                if(locatedPlayerIndex)
+                {
+                    for(int i = 0; i < players.length; i++)
+                    {
+                        if(i == playerIndex)
+                            continue;
+                        
+                        if(players[i][0] == location[0] && players[i][1] == location[1])
+                        {
+                            lockStep[i]++;
+                        }
+                    }
+                    for(int i = 0; i < lockStep.length; i++)
+                    {
+                        if(lockStep[i] > 0)
+                        {
+                            if(players[i][0] != location[0] && players[i][1] != location[1])
+                            {
+                                lockStep[i]=0;
+                            }
+                            if(lockStep[i] > MAX_LOCKSTEP_COUNT)
+                            {
+                                /* in lockstep */
+                                /* pick random location */
+                                for (;;) {
+                                    Direction dir = randomDirection();
+                                    int[] new_location = move(location, dir);
+                                    int color = color(new_location, board);
+                                    if (color >= 0 && sack[color] != 0) 
+                                    {
+                                            savedSack[color]--;
+                                            isolateCount = 0;
+                                            return dir;
+                                    }
+                                }       
+                            }
+                        }
+                    }
+                }
+                
 		//Board[][] contains color of each of the squares in the map
 		//location[] contains our location
 		//sack[] contains number of ball of each color
